@@ -6,9 +6,11 @@ namespace CandyStore.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ProductionID { get; set; }   
-        public int ProductTypeID { get; set; }  
         public string Name { get; set; }
 
         public ICollection<Sale> Sales { get; set; }
+
+        public int? ProductTypeID { get; set; }
+        public ProductType? ProductType { get; set; }
     }
 }

@@ -8,7 +8,7 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Manager</h4>
+    <h4>Менеджеры по продажам</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -35,6 +35,26 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Manager.Category)
         </dd>
+
+        <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Manager.Sales)
+        </dt>
+        <dd class="col-sm-10">
+            <table class="table">
+                <tr>
+                    <th>Проданная продукция</th>
+                </tr>
+                @foreach (var item in Model.Manager.Sales)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Production.Name)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </dd>
+
     </dl>
 </div>
 <div>

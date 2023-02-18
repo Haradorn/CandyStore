@@ -25,48 +25,41 @@ namespace CandyStore.Pages.Managers
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Managers == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var manager =  await _context.Managers.FirstOrDefaultAsync(m => m.ManagerID == id);
-            if (manager == null)
+            Manager = await _context.Managers.FindAsync(id);
+
+            if (Manager == null)
             {
                 return NotFound();
             }
-            Manager = manager;
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (!ModelState.IsValid)
+            var managerToUpdate = await _context.Managers.FindAsync(id);
+
+            if (managerToUpdate == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Manager).State = EntityState.Modified;
-
-            try
+            if (await TryUpdateModelAsync<Manager>(
+                managerToUpdate,
+                "manager",
+                m => m.FirstMidName, m => m.LastName, m => m.Category, m => m.DateBirth))
             {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ManagerExists(Manager.ManagerID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
+            return Page();
         }
 
         private bool ManagerExists(int id)

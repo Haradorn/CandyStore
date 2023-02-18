@@ -28,14 +28,15 @@ namespace CandyStore.Pages.Managers
                 return NotFound();
             }
 
-            var manager = await _context.Managers.FirstOrDefaultAsync(m => m.ManagerID == id);
-            if (manager == null)
+            Manager = await _context.Managers
+                .Include(m => m.Sales)
+                .ThenInclude(s => s.Production)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.ManagerID == id);
+
+            if (Manager == null)
             {
                 return NotFound();
-            }
-            else 
-            {
-                Manager = manager;
             }
             return Page();
         }

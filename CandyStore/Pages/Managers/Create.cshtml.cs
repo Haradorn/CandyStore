@@ -31,15 +31,19 @@ namespace CandyStore.Pages.Managers
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid)
+            var emptyManager = new Manager();
+
+            if (await TryUpdateModelAsync<Manager>(
+                emptyManager,
+                "manager",
+                m => m.FirstMidName, m => m.LastName, m => m.Category, m => m.DateBirth))
             {
-                return Page();
+                _context.Managers.Add(emptyManager);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            _context.Managers.Add(Manager);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

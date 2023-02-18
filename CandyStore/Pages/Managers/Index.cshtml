@@ -2,34 +2,52 @@
 @model CandyStore.Pages.Managers.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Managers";
 }
 
-<h1>Index</h1>
+<h2>Менеджеры по продажам</h2>
 
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+
+<form asp-page="./Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Найти по имени:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" />
+            <a asp-page="./Index">Полный список</a>
+        </p>
+    </div>    
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Manager[0].LastName)
+                <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
+                asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.Managers[0].LastName)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Manager[0].FirstMidName)
+                @Html.DisplayNameFor(model => model.Managers[0].FirstMidName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Manager[0].DateBirth)
+                <a asp-page="./Index" asp-route-sortOrder="@Model.DateSort"
+                asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.Managers[0].DateBirth)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Manager[0].Category)
+                @Html.DisplayNameFor(model => model.Managers[0].Category)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Manager) {
+@foreach (var item in Model.Managers) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.LastName)
@@ -52,3 +70,23 @@
 }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.Managers.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Managers.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Managers.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Managers.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>

@@ -1,0 +1,36 @@
+﻿@page
+@model CandyStore.Pages.ProductTypes.IndexModel
+
+@{
+    ViewData["Title"] = "ProductTypes";
+}
+
+<h1>Типы продукции</h1>
+
+<p>
+    <a asp-page="Create">Добавить новый тип</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductType[0].ProductTypeName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.ProductType) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductTypeName)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ProductTypeID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ProductTypeID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ProductTypeID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
