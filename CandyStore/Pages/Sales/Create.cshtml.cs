@@ -10,7 +10,7 @@ using CandyStore.Models;
 
 namespace CandyStore.Pages.Sales
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BuyerProductionManagerNamePageModel
     {
         private readonly CandyStore.Data.CandyContext _context;
 
@@ -21,9 +21,9 @@ namespace CandyStore.Pages.Sales
 
         public IActionResult OnGet()
         {
-        ViewData["BuyerID"] = new SelectList(_context.Buyers, "BuyerID", "BuyerID");
-        ViewData["ManagerID"] = new SelectList(_context.Managers, "ManagerID", "FirstMidName");
-        ViewData["ProductionID"] = new SelectList(_context.Productions, "ProductionID", "ProductionID");
+            PopulateBuyersDropDownList(_context);
+            PopulateManagersDropDownList(_context);
+            PopulateProductionsDropDownList(_context);
             return Page();
         }
 
@@ -34,15 +34,33 @@ namespace CandyStore.Pages.Sales
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid)
+            var emptySale = new Sale();
+
+            if (await TryUpdateModelAsync<Sale>(
+                 emptySale,
+                 "sale",   // Prefix for form value.
+                 s => s.SaleID, s => s.ManagerID, s => s.ProductionID, s => s.BuyerID, s => s.SaleDate, s => s.Price))
             {
-                return Page();
+                _context.Sales.Add(emptySale);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            _context.Sales.Add(Sale);
-            await _context.SaveChangesAsync();
+            // Select DepartmentID if TryUpdateModelAsync fails.
+            PopulateBuyersDropDownList(_context, emptySale.BuyerID);
+            PopulateManagersDropDownList(_context, emptySale.ManagerID);
+            PopulateProductionsDropDownList(_context, emptySale.ProductionID);
+            return Page();
 
-            return RedirectToPage("./Index");
+            //if (!ModelState.IsValid)
+            //  {
+            //      return Page();
+            //  }
+
+            //  _context.Sales.Add(Sale);
+            //  await _context.SaveChangesAsync();
+
+            //  return RedirectToPage("./Index");
         }
     }
 }

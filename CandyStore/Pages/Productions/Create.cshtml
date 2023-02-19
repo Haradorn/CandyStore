@@ -24,8 +24,12 @@
                 <span asp-validation-for="Production.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Production.ProductTypeID" class="control-label"></label>
-                <select asp-for="Production.ProductTypeID" class ="form-control" asp-items="ViewBag.ProductTypeID"></select>
+                <label asp-for="Production.ProductType" class="control-label"></label>
+                <select asp-for="Production.ProductTypeID" class="form-control"
+                        asp-items="@Model.ProductTypeNameSL">
+                    <option value="">-- Select Production Type --</option>
+                    </select>
+                    <span asp-validation-for="Production.ProductTypeID" class="text-danger" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

@@ -10,7 +10,7 @@ using CandyStore.Models;
 
 namespace CandyStore.Pages.Productions
 {
-    public class CreateModel : PageModel
+    public class CreateModel : ProductTypeNamePageModel
     {
         private readonly CandyStore.Data.CandyContext _context;
 
@@ -21,26 +21,29 @@ namespace CandyStore.Pages.Productions
 
         public IActionResult OnGet()
         {
-        ViewData["ProductTypeID"] = new SelectList(_context.ProductTypes, "ProductTypeID", "ProductTypeID");
+            PopulateProductTypeDropDownList(_context);
             return Page();
         }
 
         [BindProperty]
         public Production Production { get; set; }
         
-
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid)
+
+            var emptyProductuion = new Production();
+
+            if (await TryUpdateModelAsync<Production>(
+                emptyProductuion,
+                "production",
+                p => p.ProductionID, p => p.Name, p => p.ProductTypeID))
             {
-                return Page();
+                _context.Productions.Add(emptyProductuion);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-
-            _context.Productions.Add(Production);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            PopulateProductTypeDropDownList(_context, emptyProductuion.ProductTypeID);
+            return Page();
         }
     }
 }

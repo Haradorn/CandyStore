@@ -10,7 +10,7 @@ using CandyStore.Models;
 
 namespace CandyStore.Pages.Buyers
 {
-    public class CreateModel : PageModel
+    public class CreateModel : CityNamePageModel
     {
         private readonly CandyStore.Data.CandyContext _context;
 
@@ -21,26 +21,29 @@ namespace CandyStore.Pages.Buyers
 
         public IActionResult OnGet()
         {
-        ViewData["CityID"] = new SelectList(_context.Cities, "CityID", "CityID");
+            PopulateCityDropDownList(_context);
             return Page();
         }
 
         [BindProperty]
         public Buyer Buyer { get; set; }
         
-
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid)
+
+            var emptyBuyer = new Buyer();
+
+            if (await TryUpdateModelAsync<Buyer>(
+                emptyBuyer,
+                "buyer",
+                s => s.BuyerID, s => s.CityID, s => s.Name, s => s.Adress))
             {
-                return Page();
+                _context.Buyers.Add(emptyBuyer);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-
-            _context.Buyers.Add(Buyer);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            PopulateCityDropDownList(_context, emptyBuyer.CityID);
+            return Page();
         }
     }
 }

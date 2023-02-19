@@ -21,25 +21,6 @@ namespace CandyStore.Pages.Productions
 
       public Production Production { get; set; }
 
-        //public async Task<IActionResult> OnGetAsync(int? id)
-        //{
-        //    if (id == null || _context.Productions == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var production = await _context.Productions.FirstOrDefaultAsync(m => m.ProductionID == id);
-        //    if (production == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    else 
-        //    {
-        //        Production = production;
-        //    }
-        //    return Page();
-        //}
-
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null || _context.Sales == null)

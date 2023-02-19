@@ -11,7 +11,7 @@ using CandyStore.Models;
 
 namespace CandyStore.Pages.Sales
 {
-    public class EditModel : PageModel
+    public class EditModel : BuyerProductionManagerNamePageModel
     {
         private readonly CandyStore.Data.CandyContext _context;
 
@@ -25,51 +25,97 @@ namespace CandyStore.Pages.Sales
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Sales == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var sale =  await _context.Sales.FirstOrDefaultAsync(m => m.SaleID == id);
-            if (sale == null)
+            Sale = await _context.Sales
+                .Include(s => s.Buyer).Include(s => s.Production).Include(s => s.Manager).FirstOrDefaultAsync(s => s.SaleID == id);
+
+            if (Sale == null)
             {
                 return NotFound();
             }
-            Sale = sale;
-           ViewData["BuyerID"] = new SelectList(_context.Buyers, "BuyerID", "BuyerID");
-           ViewData["ManagerID"] = new SelectList(_context.Managers, "ManagerID", "FirstMidName");
-           ViewData["ProductionID"] = new SelectList(_context.Productions, "ProductionID", "ProductionID");
+
+            PopulateBuyersDropDownList(_context, Sale.BuyerID);
+            PopulateManagersDropDownList(_context, Sale.ManagerID);
+            PopulateProductionsDropDownList(_context, Sale.ProductionID);
+
             return Page();
+
+
+
+            // if (id == null || _context.Sales == null)
+            // {
+            //     return NotFound();
+            // }
+
+            // var sale =  await _context.Sales.FirstOrDefaultAsync(m => m.SaleID == id);
+            // if (sale == null)
+            // {
+            //     return NotFound();
+            // }
+            // Sale = sale;
+            //ViewData["BuyerID"] = new SelectList(_context.Buyers, "BuyerID", "BuyerID");
+            //ViewData["ManagerID"] = new SelectList(_context.Managers, "ManagerID", "FirstMidName");
+            //ViewData["ProductionID"] = new SelectList(_context.Productions, "ProductionID", "ProductionID");
+            // return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!ModelState.IsValid)
+
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Sale).State = EntityState.Modified;
+            var saleToUpdate = await _context.Sales.FindAsync(id);
 
-            try
+            if (saleToUpdate == null)
+            {
+                return NotFound();
+            }
+            if (await TryUpdateModelAsync<Sale>(
+                saleToUpdate,
+                "sale",
+                s => s.BuyerID, s => s.ManagerID, s => s.ProductionID, s => s.SaleDate, s => s.Price))
             {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SaleExists(Sale.SaleID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
+            PopulateBuyersDropDownList(_context, saleToUpdate.BuyerID);
+            PopulateManagersDropDownList(_context, saleToUpdate.ManagerID);
+            PopulateProductionsDropDownList(_context, saleToUpdate.ProductionID);
+
+            return Page();
+
+            //if (!ModelState.IsValid)
+            //{
+            //    return Page();
+            //}
+
+            //_context.Attach(Sale).State = EntityState.Modified;
+
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!SaleExists(Sale.SaleID))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
+
+            //return RedirectToPage("./Index");
         }
 
         private bool SaleExists(int id)

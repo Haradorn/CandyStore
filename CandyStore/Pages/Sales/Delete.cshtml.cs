@@ -29,15 +29,11 @@ namespace CandyStore.Pages.Sales
                 return NotFound();
             }
 
-            var sale = await _context.Sales.FirstOrDefaultAsync(m => m.SaleID == id);
+            Sale = await _context.Sales.FirstOrDefaultAsync(m => m.SaleID == id);
 
-            if (sale == null)
+            if (Sale == null)
             {
                 return NotFound();
-            }
-            else 
-            {
-                Sale = sale;
             }
             return Page();
         }

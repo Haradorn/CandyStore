@@ -14,16 +14,28 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Sale.ManagerID" class="control-label"></label>
-                <select asp-for="Sale.ManagerID" class ="form-control" asp-items="ViewBag.ManagerID"></select>
+                <label asp-for="Sale.Buyer" class="control-label"></label>
+                <select asp-for="Sale.BuyerID" class="form-control"
+                        asp-items="@Model.BuyerNameSL">
+                    <option value="">-- Select Buyer --</option>
+                </select>
+                <span asp-validation-for="Sale.BuyerID" class="text-danger" />
             </div>
             <div class="form-group">
-                <label asp-for="Sale.ProductionID" class="control-label"></label>
-                <select asp-for="Sale.ProductionID" class ="form-control" asp-items="ViewBag.ProductionID"></select>
+                <label asp-for="Sale.Manager" class="control-label"></label>
+                <select asp-for="Sale.ManagerID" class="form-control"
+                        asp-items="@Model.ManagerNameSL">
+                    <option value="">-- Select Manager --</option>
+                </select>
+                <span asp-validation-for="Sale.ManagerID" class="text-danger" />
             </div>
             <div class="form-group">
-                <label asp-for="Sale.BuyerID" class="control-label"></label>
-                <select asp-for="Sale.BuyerID" class ="form-control" asp-items="ViewBag.BuyerID"></select>
+                <label asp-for="Sale.Production" class="control-label"></label>
+                <select asp-for="Sale.ProductionID" class="form-control"
+                        asp-items="@Model.ProductionNameSL">
+                    <option value="">-- Select Production --</option>
+                </select>
+                <span asp-validation-for="Sale.ProductionID" class="text-danger" />
             </div>
             <div class="form-group">
                 <label asp-for="Sale.SaleDate" class="control-label"></label>

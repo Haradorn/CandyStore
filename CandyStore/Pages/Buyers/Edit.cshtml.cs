@@ -11,7 +11,7 @@ using CandyStore.Models;
 
 namespace CandyStore.Pages.Buyers
 {
-    public class EditModel : PageModel
+    public class EditModel : CityNamePageModel
     {
         private readonly CandyStore.Data.CandyContext _context;
 
@@ -30,49 +30,45 @@ namespace CandyStore.Pages.Buyers
                 return NotFound();
             }
 
-            var buyer =  await _context.Buyers.FirstOrDefaultAsync(m => m.BuyerID == id);
-            if (buyer == null)
+            Buyer =  await _context.Buyers.Include(c => c.City).FirstOrDefaultAsync(m => m.BuyerID == id);
+
+            if (Buyer == null)
             {
                 return NotFound();
             }
-            Buyer = buyer;
-           ViewData["CityID"] = new SelectList(_context.Cities, "CityID", "CityID");
+
+
+            PopulateCityDropDownList(_context, Buyer.CityID);
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+
+        public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Buyer).State = EntityState.Modified;
+            var buyerToUpdate = await _context.Buyers.FindAsync(id);
 
-            try
+            if (buyerToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            if (await TryUpdateModelAsync<Buyer>(
+                 buyerToUpdate,
+                 "buyer",
+                 b => b.Name, b => b.Adress, b => b.CityID))
+                   
             {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BuyerExists(Buyer.BuyerID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool BuyerExists(int id)
-        {
-          return _context.Buyers.Any(e => e.BuyerID == id);
+            PopulateCityDropDownList(_context, buyerToUpdate.CityID);
+            return Page();
         }
     }
 }

@@ -15,6 +15,28 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Sale.SaleID" />
             <div class="form-group">
+                <label asp-for="Sale.SaleID" class="control-label"></label>
+                <div>@Html.DisplayFor(model => model.Sale.SaleID)</div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sale.Manager" class="control-label"></label>
+                <select asp-for="Sale.ManagerID" class="form-control" 
+                        asp-items="@Model.ManagerNameSL"></select>
+                <span asp-validation-for="Sale.ManagerID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sale.Production" class="control-label"></label>
+                <select asp-for="Sale.ProductionID" class="form-control" 
+                        asp-items="@Model.ProductionNameSL"></select>
+                <span asp-validation-for="Sale.ProductionID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sale.Buyer" class="control-label"></label>
+                <select asp-for="Sale.BuyerID" class="form-control" 
+                        asp-items="@Model.BuyerNameSL"></select>
+                <span asp-validation-for="Sale.BuyerID" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
                 <label asp-for="Sale.ManagerID" class="control-label"></label>
                 <select asp-for="Sale.ManagerID" class="form-control" asp-items="ViewBag.ManagerID"></select>
                 <span asp-validation-for="Sale.ManagerID" class="text-danger"></span>
@@ -28,7 +50,7 @@
                 <label asp-for="Sale.BuyerID" class="control-label"></label>
                 <select asp-for="Sale.BuyerID" class="form-control" asp-items="ViewBag.BuyerID"></select>
                 <span asp-validation-for="Sale.BuyerID" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Sale.SaleDate" class="control-label"></label>
                 <input asp-for="Sale.SaleDate" class="form-control" />

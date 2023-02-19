@@ -11,7 +11,7 @@ using CandyStore.Models;
 
 namespace CandyStore.Pages.Productions
 {
-    public class EditModel : PageModel
+    public class EditModel : ProductTypeNamePageModel
     {
         private readonly CandyStore.Data.CandyContext _context;
 
@@ -30,49 +30,74 @@ namespace CandyStore.Pages.Productions
                 return NotFound();
             }
 
-            var production =  await _context.Productions.FirstOrDefaultAsync(m => m.ProductionID == id);
-            if (production == null)
+            Production =  await _context.Productions.Include(p => p.ProductType).FirstOrDefaultAsync(t => t.ProductionID == id);
+            if (Production == null)
             {
                 return NotFound();
             }
-            Production = production;
-           ViewData["ProductTypeID"] = new SelectList(_context.ProductTypes, "ProductTypeID", "ProductTypeID");
+            PopulateProductTypeDropDownList(_context, Production.ProductTypeID);
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Production).State = EntityState.Modified;
+            var productToUpdate = await _context.Productions.FindAsync(id);
 
-            try
+            if (productToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            if (await TryUpdateModelAsync<Production>(
+                 productToUpdate,
+                 "production",
+                 p => p.Name, p => p.ProductTypeID))
+
             {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductionExists(Production.ProductionID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
+            PopulateProductTypeDropDownList(_context, productToUpdate.ProductTypeID);
+            return Page();
         }
 
-        private bool ProductionExists(int id)
-        {
-          return _context.Productions.Any(e => e.ProductionID == id);
-        }
+        //public async Task<IActionResult> OnPostAsync()
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return Page();
+        //    }
+
+        //    _context.Attach(Production).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!ProductionExists(Production.ProductionID))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return RedirectToPage("./Index");
+        //}
+
+        //private bool ProductionExists(int id)
+        //{
+        //  return _context.Productions.Any(e => e.ProductionID == id);
+        //}
     }
 }
